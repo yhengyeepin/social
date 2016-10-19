@@ -1,0 +1,85 @@
+<section ng-init="findFollowedByChannel()">
+  <div style="margin-left: 30px">
+    <div >
+      <form name="articleForm" ng-submit="create(articleForm.$valid)" novalidate>
+        <fieldset>
+          <div class="form-group" show-errors>
+            <label for="title">{{vm.dashData.channel.name}}</label>
+            <input name="title" type="text" ng-model="title" id="title" class="form-control" placeholder="What's happening?" required>
+            <div ng-messages="articleForm.title.$error" role="alert">
+              <p class="help-block error-text" ng-message="required">Content is required.</p>
+            </div>
+          </div>
+          <!--div class="form-group">
+          <label for="content">Content</label>
+          <textarea name="content" ng-model="content" id="content" class="form-control" cols="30" rows="10" placeholder="Content"></textarea>
+        </div-->
+        <div class="form-group">
+          <button type="submit" class="btn btn-default">Post</button>
+        </div>
+        <div ng-show="error" class="text-danger">
+          <strong ng-bind="error"></strong>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+  <div class="list-group" style="box-shadow: none;"> <!--ui-sref="articles.view({articleId: article._id})"-->
+    <div ng-repeat="article in vm.dashData.articles"  class="list-group-item" style="margin: 20px 0px;padding: 20px 30px;background:#E6F5FF">
+      <div class="row" >
+        <img ng-src="{{article.user.profileImageURL}}" alt="{{article.user.displayName}}" class="pull-left chat-profile-image" style="margin-right: 10px;"/>
+        <small class="list-group-item-text">
+          <span ng-bind="article.user.displayName"></span>
+          <span class="pull-right" ng-bind="article.created | date:'mediumDate'"></span>
+          <button ng-if="authentication.user.displayName !== article.user.displayName" ng-click="toggleFollow(article.user, article)" ng-init="initFollowStatus(article.user, article)">{{article.followedOrNot}}</button>
+        </small>
+        <h4 class="list-group-item-heading" style="margin: 10px 40px 20px 40px;" ng-bind="article.title"></h4>
+        <p class="list-group-item-text" ng-bind="article.content"></p>
+      </div>
+      <!--list comments -->
+      <div class="list-group" style="margin: 0px 20px;" ng-init="findReplies(article)">
+
+        <a data-ng-repeat="reply in article.replies"
+           class="list-group-item">
+           <img ng-src="{{reply.user.profileImageURL}}" alt="{{reply.user.displayName}}" class="pull-left chat-profile-image" style="margin-right: 10px;"/>
+           <small class="list-group-item-text">
+             <span ng-bind="reply.user.displayName"></span>
+             <span class="pull-right" ng-bind="reply.created | date:'mediumDate'"></span>
+           </small>
+           <h4 class="list-group-item-heading" ng-bind="reply.name"></h4>
+
+          <!--small class="list-group-item-text">
+            Posted on
+            <span data-ng-bind="reply.created | date:'mediumDate'"></span>
+            by
+            <span data-ng-if="reply.user" data-ng-bind="reply.user.displayName"></span>
+            <span data-ng-if="!reply.user">Deleted User</span>
+          </small>
+          <h4 class="list-group-item-heading" data-ng-bind="reply.name"></h4-->
+        </a>
+      </div>
+      <!--add comments-->
+      <div class="row" style="margin: 0px 20px;">
+        <form name="vm.form.replyForm[article._id]" class="form-horizontal col-md-12" ng-submit="vm.save(vm.form.replyForm[article._id].$valid, article)" novalidate>
+          <fieldset>
+            <div class="form-group" show-errors>
+              <input name="name" type="text" ng-model="article.newreply.name" id="name" class="form-control" placeholder="Comment..." required>
+              <div ng-messages="vm.form.replyForm.name[article._id].$error" role="alert">
+                <p class="help-block error-text" ng-message="required">Reply cannot be empty.</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-default">Reply</button>
+            </div>
+            <div ng-show="vm.error" class="text-danger">
+              <strong ng-bind="vm.error"></strong>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!--div class="alert alert-warning text-center" ng-if="articles.$resolved && !articles.length">
+    No articles yet, why don't you <a ui-sref="articles.create">create one</a>?
+  </div-->
+</div>
+</section>
